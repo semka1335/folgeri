@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folgeri</title>
+    <style>
+        :root {
+            --primary-color: #0088cc;
+            --secondary-color: #f0f2f5;
+            --text-color: #333;
+            --light-text: #707579;
+            --white: #ffffff;
+            --chat-hover: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--secondary-color);
+        }
+
+        /* Сайдбар */
+        .sidebar {
+            width: 350px;
+            background-color: var(--white);
+            border-right: 1px solid #e1e1e1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header {
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .search {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 8px 15px;
+            border-radius: 18px;
+            border: 1px solid #e1e1e1;
+            outline: none;
+        }
+
+        .chats-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: var(--chat-hover);
+        }
+
+        .chat-item.active {
+            background-color: var(--secondary-color);
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .last-message {
+            color: var(--light-text);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Основной чат */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e1e1;
+            display: flex;
+            align-items: center;
+            background-color: var(--white);
+        }
+
+        .chat-title {
+            font-weight: 500;
+            margin-left: 15px;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--secondary-color);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+        }
+
+        .message-incoming {
+            align-items: flex-start;
+        }
+
+        .message-outgoing {
+            align-items: flex-end;
+        }
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 5px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .incoming .message-bubble {
+            background-color: var(--white);
+            border-top-left-radius: 5px;
+        }
+
+        .outgoing .message-bubble {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-top-right-radius: 5px;
+        }
+
+        .message-info {
+            font-size: 12px;
+            color: var(--light-text);
+            display: flex;
+        }
+
+        .outgoing .message-info {
+            justify-content: flex-end;
+        }
+
+        .message-time {
+            margin-left: 5px;
+        }
+
+        .input-area {
+            padding: 15px;
+            background-color: var(--white);
+            border-top: 1px solid #e1e1e1;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: 1px solid #e1e1e1;
+            outline: none;
+            resize: none;
+            height: 40px;
+            max-height: 120px;
+        }
+
+        .send-button {
+            margin-left: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Настройки */
+        .settings {
+            width: 350px;
+            background-color: var(--white);
+            border-left: 1px solid #e1e1e1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .settings-header {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .settings-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .settings-item:hover {
+            background-color: var(--chat-hover);
+        }
+
+        .settings-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .user-switch {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <!-- Сайдбар с чатами -->
+    <div class="sidebar">
+        <div class="header">
+            <div class="logo">Folgeri</div>
+            <div class="menu-icon">≡</div>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="Поиск">
+        </div>
+        <div class="chats-list" id="chatsList">
+            <!-- Чаты будут добавляться через JS -->
+        </div>
+    </div>
+
+    <!-- Основной чат -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-avatar" id="currentChatAvatar">U</div>
+            <div class="chat-title" id="currentChatTitle">Выберите чат</div>
+        </div>
+        <div class="messages" id="messagesContainer">
+            <!-- Сообщения будут добавляться через JS -->
+        </div>
+        <div class="input-area">
+            <textarea class="message-input" id="messageInput" placeholder="Введите сообщение..."></textarea>
+            <button class="send-button" id="sendButton">→</button>
+        </div>
+    </div>
+
+    <!-- Панель настроек -->
+    <div class="settings" id="settingsPanel">
+        <div class="settings-header">Настройки</div>
+        <div class="settings-item">
+            <div class="settings-icon">👤</div>
+            <div>Профиль</div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-icon">🔔</div>
+            <div>Уведомления</div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-icon">🌙</div>
+            <div>Ночной режим</div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-icon">🛡️</div>
+            <div>Конфиденциальность</div>
+        </div>
+        <div class="settings-item">
+            <div class="settings-icon">❓</div>
+            <div>Помощь</div>
+        </div>
+    </div>
+
+    <!-- Переключатель пользователей -->
+    <div class="user-switch" id="userSwitch">Аккаунт: User1</div>
+
+    <script>
+        // Данные приложения
+        const users = {
+            user1: {
+                id: 'user1',
+                name: 'User1',
+                avatar: 'U1',
+                color: '#0088cc'
+            },
+            user2: {
+                id: 'user2',
+                name: 'User2',
+                avatar: 'U2',
+                color: '#dc3545'
+            }
+        };
+
+        const chats = [
+            {
+                id: 'chat1',
+                name: 'Алексей Петров',
+                avatar: 'AP',
+                color: '#28a745',
+                messages: [
+                    {
+                        text: 'Привет! Как дела?',
+                        sender: 'user2',
+                        time: '10:30'
+                    },
+                    {
+                        text: 'Привет! Все отлично, спасибо!',
+                        sender: 'user1',
+                        time: '10:32'
+                    },
+                    {
+                        text: 'Что нового?',
+                        sender: 'user2',
+                        time: '10:33'
+                    }
+                ]
+            },
+            {
+                id: 'chat2',
+                name: 'Мария Иванова',
+                avatar: 'MI',
+                color: '#ffc107',
+                messages: [
+                    {
+                        text: 'Добрый день!',
+                        sender: 'user2',
+                        time: '09:15'
+                    },
+                    {
+                        text: 'Здравствуйте! Чем могу помочь?',
+                        sender: 'user1',
+                        time: '09:20'
+                    }
+                ]
+            },
+            {
+                id: 'chat3',
+                name: 'Рабочий чат',
+                avatar: 'R',
+                color: '#6610f2',
+                messages: [
+                    {
+                        text: 'Кто-нибудь уже посмотрел новый отчет?',
+                        sender: 'user2',
+                        time: 'Вчера'
+                    }
+                ]
+            }
+        ];
+
+        // Текущее состояние
+        let currentUser = users.user1;
+        let currentChat = null;
+
+        // DOM элементы
+        const chatsList = document.getElementById('chatsList');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const currentChatTitle = document.getElementById('currentChatTitle');
+        const currentChatAvatar = document.getElementById('currentChatAvatar');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const userSwitch = document.getElementById('userSwitch');
+
+        // Инициализация чатов
+        function initChats() {
+            chatsList.innerHTML = '';
+            chats.forEach(chat => {
+                const lastMessage = chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'Нет сообщений';
+                
+                const chatItem = document.createElement('div');
+                chatItem.className = 'chat-item';
+                chatItem.dataset.chatId = chat.id;
+                chatItem.innerHTML = `
+                    <div class="chat-avatar" style="background-color: ${chat.color}">${chat.avatar}</div>
+                    <div class="chat-info">
+                        <div class="chat-name">${chat.name}</div>
+                        <div class="last-message">${lastMessage}</div>
+                    </div>
+                `;
+                
+                chatItem.addEventListener('click', () => openChat(chat.id));
+                chatsList.appendChild(chatItem);
+            });
+        }
+
+        // Открытие чата
+        function openChat(chatId) {
+            currentChat = chats.find(chat => chat.id === chatId);
+            
+            // Обновляем заголовок чата
+            currentChatTitle.textContent = currentChat.name;
+            currentChatAvatar.textContent = currentChat.avatar;
+            currentChatAvatar.style.backgroundColor = currentChat.color;
+            
+            // Показываем сообщения
+            renderMessages();
+            
+            // Помечаем активный чат
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.chatId === chatId);
+            });
+        }
+
+        // Отображение сообщений
+        function renderMessages() {
+            messagesContainer.innerHTML = '';
+            
+            if (!currentChat) return;
+            
+            currentChat.messages.forEach(message => {
+                const isOutgoing = message.sender === currentUser.id;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isOutgoing ? 'outgoing' : 'incoming'}`;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">${message.text}</div>
+                    <div class="message-info">
+                        <span class="message-time">${message.time}</span>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(messageDiv);
+            });
+            
+            // Прокрутка вниз
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Отправка сообщения
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !currentChat) return;
+            
+            const newMessage = {
+                text,
+                sender: currentUser.id,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+            
+            currentChat.messages.push(newMessage);
+            messageInput.value = '';
+            
+            // Обновляем UI
+            renderMessages();
+            updateLastMessage(currentChat.id, text);
+        }
+
+        // Обновление последнего сообщения в списке чатов
+        function updateLastMessage(chatId, text) {
+            const chatItem = document.querySelector(`.chat-item[data-chat-id="${chatId}"] .last-message`);
+            if (chatItem) {
+                chatItem.textContent = text;
+            }
+        }
+
+        // Переключение пользователя
+        function switchUser() {
+            currentUser = currentUser.id === 'user1' ? users.user2 : users.user1;
+            userSwitch.textContent = `Аккаунт: ${currentUser.name}`;
+            
+            // Перерисовываем сообщения с новой точки зрения
+            if (currentChat) {
+                renderMessages();
+            }
+        }
+
+        // Инициализация
+        initChats();
+
+        // Открываем первый чат
+        if (chats.length > 0) {
+            openChat(chats[0].id);
+        }
+
+        // Обработчики событий
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        userSwitch.addEventListener('click', switchUser);
+
+        // Показать/скрыть настройки (для демонстрации)
+        document.querySelector('.menu-icon').addEventListener('click', () => {
+            settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
